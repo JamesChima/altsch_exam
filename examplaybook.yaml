@@ -1,0 +1,29 @@
+- name: Deploy Laravel App
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Execute Deployment Script
+      become: true
+      script: /home/ansible/ansible/altsch_exam/altsch_lampstack.sh
+
+- name: Set up cron job for server uptime
+  hosts: alle
+
+  tasks:
+    - name: Ensure cron job directory exists
+      file:
+        path: /etc/cron.d
+        state: directory
+
+    - name: Create cron job file
+      template:
+        src: cron_template.j2
+        dest: /etc/cron.d/uptime_check
+      vars:
+        script_path: /home/ansible/ansible/altsch_exam/server_uptime.sh
+
+    - name: Ensure script is executable
+      file:
+        path: "{{ script_path }}"
+        mode: '+x'
